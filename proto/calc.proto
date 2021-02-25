@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package proto;
+
+option go_package = "CalculatorService/proto";
+
+message IntRequest{
+  int64 number = 1;
+  string optional_error = 2;
+}
+
+message IntResponse{
+  int64 number = 1;
+  string optional_error = 2;
+}
+
+message FloatRequest{
+  double number = 1;
+  string optional_error = 2;
+}
+
+message FloatResponse{
+  double number = 1;
+  string optional_error = 2;
+}
+
+service CalculatorService{
+    //stream as request
+    rpc PrimeNumberDecomposition(IntRequest) returns (stream IntResponse);
+    //stream as request
+    rpc ComputeAverage(stream IntRequest) returns (FloatResponse);
+}

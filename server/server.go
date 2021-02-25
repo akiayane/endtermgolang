@@ -12,8 +12,7 @@ type Server struct {
 	proto.UnimplementedCalculatorServiceServer
 }
 
-
-func (s *Server) PrimeNumberDecomposition(req *proto.IntRequest,stream proto.CalculatorService_PrimeNumberDecompositionServer)  error{
+func (s *Server) PrimeNumberDecomposition(req *proto.IntRequest, stream proto.CalculatorService_PrimeNumberDecompositionServer) error {
 	number := int(req.Number)
 	for number%2 == 0 {
 		res := &proto.IntResponse{Number: 2, OptionalError: ""}
@@ -22,7 +21,6 @@ func (s *Server) PrimeNumberDecomposition(req *proto.IntRequest,stream proto.Cal
 		}
 		number = number / 2
 	}
-
 
 	for i := 3; i*i <= number; i = i + 2 {
 		// while i divides n, append i and divide n
@@ -45,19 +43,15 @@ func (s *Server) PrimeNumberDecomposition(req *proto.IntRequest,stream proto.Cal
 	return nil
 }
 
-func (s *Server) ComputeAverage(stream proto.CalculatorService_ComputeAverageServer)  error{
+func (s *Server) ComputeAverage(stream proto.CalculatorService_ComputeAverageServer) error {
 	var avg float64
-	a := make([]int64, 10)
+	var sum float64
+	var counter float64
 
 	for {
 		req, err := stream.Recv()
 		if err == io.EOF {
-			for i := 0; i < len(a); i++ {
 
-				avg += float64(a[i])
-			}
-
-			avg := (float64(avg)) / (float64(len(a)))
 			return stream.SendAndClose(&proto.FloatResponse{
 				Number: avg,
 			})
@@ -67,8 +61,11 @@ func (s *Server) ComputeAverage(stream proto.CalculatorService_ComputeAverageSer
 			log.Fatalf("Error while reading avg_client stream: %v", err)
 		}
 
-		num := req.Number
-		a = append(a, num)
+		number := req.Number
+		sum += float64(number)
+		counter++
+
+		avg = sum / counter
 	}
 }
 
